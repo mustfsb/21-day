@@ -495,6 +495,27 @@ const getBadgeColor = (color: ColorType) => {
 export default function App() {
   const [activeDay, setActiveDay] = useState<number>(0);
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load from local storage on mount
+  React.useEffect(() => {
+    const saved = localStorage.getItem('completedTasks');
+    if (saved) {
+      try {
+        setCompletedTasks(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse completedTasks', e);
+      }
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Save to local storage whenever completedTasks changes
+  React.useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+    }
+  }, [completedTasks, isLoaded]);
 
   const toggleTask = (dayIdx: number, sessionIdx: number, taskIdx: number) => {
     const taskId = `${dayIdx}-${sessionIdx}-${taskIdx}`;

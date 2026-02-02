@@ -2,7 +2,30 @@
 import React, { useState } from 'react';
 import { BookOpen, Clock, CheckCircle, Circle, Calendar, ChevronRight, Trophy, Brain, Flame, Coffee, PlayCircle } from 'lucide-react';
 
-const scheduleData = [
+type ColorType = 'blue' | 'emerald' | 'teal' | 'indigo' | 'orange' | 'pink' | 'rose' | 'violet' | 'red' | 'yellow';
+
+interface Session {
+  time: string;
+  subject: string;
+  topic: string;
+  instructor: string;
+  type: string;
+  color: ColorType;
+  videoUrl?: string;
+  videoUrls?: string[];
+  tasks: string[];
+}
+
+interface DaySchedule {
+  day: number;
+  date: string;
+  title: string;
+  focus: string;
+  isRestDay?: boolean;
+  sessions: Session[];
+}
+
+const scheduleData: DaySchedule[] = [
   {
     day: 1,
     date: "3 Şubat Salı",
@@ -436,8 +459,8 @@ const scheduleData = [
 ];
 
 // Dark mode color palette
-const getColorClass = (color: string) => {
-  const colors = {
+const getColorClass = (color: ColorType) => {
+  const colors: Record<ColorType, string> = {
     blue: "border-blue-800 bg-blue-950/40 text-blue-200",
     emerald: "border-emerald-800 bg-emerald-950/40 text-emerald-200",
     teal: "border-teal-800 bg-teal-950/40 text-teal-200",
@@ -449,12 +472,12 @@ const getColorClass = (color: string) => {
     red: "border-red-800 bg-red-950/40 text-red-200",
     yellow: "border-yellow-800 bg-yellow-950/40 text-yellow-200",
   };
-  return colors[color as keyof typeof colors] || colors.blue;
+  return colors[color] || colors.blue;
 };
 
 // Dark mode badge palette
-const getBadgeColor = (color: string) => {
-  const colors = {
+const getBadgeColor = (color: ColorType) => {
+  const colors: Record<ColorType, string> = {
     blue: "bg-blue-900/50 text-blue-300 border border-blue-700/50",
     emerald: "bg-emerald-900/50 text-emerald-300 border border-emerald-700/50",
     teal: "bg-teal-900/50 text-teal-300 border border-teal-700/50",
@@ -466,14 +489,14 @@ const getBadgeColor = (color: string) => {
     red: "bg-red-900/50 text-red-300 border border-red-700/50",
     yellow: "bg-yellow-900/50 text-yellow-300 border border-yellow-700/50",
   };
-  return colors[color as keyof typeof colors] || colors.blue;
+  return colors[color] || colors.blue;
 }
 
 export default function App() {
-  const [activeDay, setActiveDay] = useState(0);
-  const [completedTasks, setCompletedTasks] = useState({});
+  const [activeDay, setActiveDay] = useState<number>(0);
+  const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
 
-  const toggleTask = (dayIdx, sessionIdx, taskIdx) => {
+  const toggleTask = (dayIdx: number, sessionIdx: number, taskIdx: number) => {
     const taskId = `${dayIdx}-${sessionIdx}-${taskIdx}`;
     setCompletedTasks(prev => {
       const newState = { ...prev };
@@ -486,7 +509,7 @@ export default function App() {
     });
   };
 
-  const isTaskCompleted = (dayIdx, sessionIdx, taskIdx) => {
+  const isTaskCompleted = (dayIdx: number, sessionIdx: number, taskIdx: number) => {
     return !!completedTasks[`${dayIdx}-${sessionIdx}-${taskIdx}`];
   };
 
@@ -601,7 +624,6 @@ export default function App() {
                         {session.topic}
                       </h3>
                       <div className="flex flex-col gap-1 items-end">
-                        {/* @ts-ignore */}
                         {(session.videoUrls || (session.videoUrl ? [session.videoUrl] : [])).map((url, i) => (
                           <a
                             key={i}
@@ -612,7 +634,6 @@ export default function App() {
                             onClick={(e) => e.stopPropagation()}
                           >
                             <PlayCircle size={14} />
-                            {/* @ts-ignore */}
                             {session.videoUrls ? `Ders ${i + 1}` : 'Dersi İzle'}
                           </a>
                         ))}

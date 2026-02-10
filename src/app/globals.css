@@ -1,0 +1,90 @@
+@custom-variant dark (&:where(.dark, .dark *));
+
+@import "tailwindcss";
+
+:root {
+  --background: #f8fafc;
+  --foreground: #1e293b;
+}
+
+.dark {
+  --background: #262626;
+  --foreground: #e2e8f0;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Collapse Animation (CSS Grid trick for smooth height) */
+.collapse-grid {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapse-grid.open {
+  grid-template-rows: 1fr;
+}
+
+.collapse-content {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Staggered fade for session blocks inside open day */
+.collapse-grid.open .session-block {
+  animation: fadeIn 0.35s ease-out both;
+}
+
+.collapse-grid.open .session-block:nth-child(1) { animation-delay: 0.05s; }
+.collapse-grid.open .session-block:nth-child(2) { animation-delay: 0.1s; }
+.collapse-grid.open .session-block:nth-child(3) { animation-delay: 0.15s; }
+.collapse-grid.open .session-block:nth-child(4) { animation-delay: 0.2s; }
+.collapse-grid.open .session-block:nth-child(5) { animation-delay: 0.25s; }
+
+/* Checkbox tick animation */
+@keyframes checkPop {
+  0% { transform: scale(0.5); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.check-animate {
+  animation: checkPop 0.2s ease-out;
+}
+
+/* Custom Scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
